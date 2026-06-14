@@ -18,6 +18,7 @@ export type CareerQuest = {
   openingLine: string;
   careerMatches: string[];
   careerMilestones: string[];
+  dailyMissions: string[];
   learningPath: string[];
   skillGapAnalysis: string[];
   careerSimulator: string;
@@ -93,6 +94,11 @@ export function buildFallbackCareerQuest(profile: CareerProfile): CareerQuest {
       "Month 1: Build a portfolio project aligned with your strongest skill.",
       "Month 2: Complete one role-specific certification or course.",
       "Month 3: Run 3 mock interviews and apply to 10 targeted roles.",
+    ],
+    dailyMissions: [
+      "Study one learning-path topic for 25 focused minutes.",
+      "Update one portfolio bullet with measurable impact.",
+      "Reach out to one mentor or peer in your target field.",
     ],
     learningPath: [
       "Week 1-2: Foundation refresh from your current education level.",
@@ -213,6 +219,11 @@ function extractSummary(payload: unknown, profile: CareerProfile, fromFoundry = 
     : Array.isArray(record.heroMoments)
       ? record.heroMoments.filter((value): value is string => typeof value === "string")
       : fallback.careerMilestones;
+  const dailyMissions = Array.isArray(record.dailyMissions)
+    ? record.dailyMissions.filter((value): value is string => typeof value === "string")
+    : Array.isArray(record.missions)
+      ? record.missions.filter((value): value is string => typeof value === "string")
+      : fallback.dailyMissions;
   const learningPath = Array.isArray(record.learningPath)
     ? record.learningPath.filter((value): value is string => typeof value === "string")
     : Array.isArray(record.visualSystem)
@@ -248,6 +259,7 @@ function extractSummary(payload: unknown, profile: CareerProfile, fromFoundry = 
     careerMilestones: careerMilestones.length
       ? careerMilestones.slice(0, 4)
       : fallback.careerMilestones,
+    dailyMissions: dailyMissions.length ? dailyMissions.slice(0, 4) : fallback.dailyMissions,
     learningPath: learningPath.length ? learningPath.slice(0, 4) : fallback.learningPath,
     skillGapAnalysis: skillGapAnalysis.length
       ? skillGapAnalysis.slice(0, 4)

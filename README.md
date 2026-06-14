@@ -21,6 +21,10 @@ AI Career Quest is a Battle #1 creative app built with GitHub Copilot and Next.j
 - Skill-gap analysis
 - Career simulator
 - Quest-based learning path
+- Daily career missions
+- Level and streak progression
+- AI interview question pack
+- Career readiness quiz
 
 ## Why This Fits The Challenge
 
@@ -58,6 +62,22 @@ npm run dev
 ```
 
 Open http://localhost:3000.
+
+## Run Frontend + Backend
+
+This project uses Next.js App Router, so frontend and backend run together in one process.
+
+- Start full stack locally: `npm run dev`
+- Production backend + frontend:
+	- `npm run build`
+	- `npm run start`
+
+Available backend APIs:
+
+- `POST /api/remix` for Career Quest generation
+- `POST /api/coach` for AI Career Coach chat
+- `POST /api/quiz` for career readiness quiz generation
+- `POST /api/interview` for AI interview questions
 
 ## Foundry IQ Setup
 

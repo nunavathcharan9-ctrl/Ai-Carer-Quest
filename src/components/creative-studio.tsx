@@ -71,11 +71,18 @@ export function CreativeStudio() {
         body: JSON.stringify(nextBrief),
       });
 
+      const payload = (await response.json().catch(() => null)) as
+        | { remix?: CreativeRemix; error?: string }
+        | null;
+
       if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
+        throw new Error(payload?.error || `Request failed with status ${response.status}`);
       }
 
-      const payload = (await response.json()) as { remix: CreativeRemix };
+      if (!payload?.remix) {
+        throw new Error("The remix engine returned an empty response.");
+      }
+
       setRemix(payload.remix);
     } catch (requestError) {
       setError(

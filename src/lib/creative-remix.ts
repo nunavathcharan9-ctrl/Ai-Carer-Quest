@@ -23,6 +23,16 @@ export type CreativeRemix = {
   mode: "foundry" | "demo";
 };
 
+function makeFoundryGroundingFallback(brief: CreativeBrief): InsightSource[] {
+  return [
+    {
+      title: "Foundry IQ session",
+      summary: `Grounded response generated for ${brief.audience} in ${brief.format} format with a ${brief.mood} tone.`,
+      citation: "Foundry IQ",
+    },
+  ];
+}
+
 const DEFAULT_PROMPT = "A creative app for brainstorming a new experience.";
 
 function sentenceCase(text: string) {
@@ -146,7 +156,7 @@ function extractSources(payload: unknown): InsightSource[] {
   return [];
 }
 
-function extractSummary(payload: unknown, brief: CreativeBrief): CreativeRemix {
+function extractSummary(payload: unknown, brief: CreativeBrief, fromFoundry = false): CreativeRemix {
   if (!payload || typeof payload !== "object") {
     return buildFallbackRemix(brief);
   }
@@ -183,6 +193,9 @@ function extractSummary(payload: unknown, brief: CreativeBrief): CreativeRemix {
     ? record.visualSystem.filter((value): value is string => typeof value === "string")
     : fallback.visualSystem;
   const grounding = extractSources(payload);
+  const fallbackGrounding = fromFoundry
+    ? makeFoundryGroundingFallback(brief)
+    : makeFallbackGrounding(brief);
 
   return {
     title,
@@ -191,8 +204,8 @@ function extractSummary(payload: unknown, brief: CreativeBrief): CreativeRemix {
     openingLine,
     heroMoments: heroMoments.length ? heroMoments.slice(0, 3) : fallback.heroMoments,
     visualSystem: visualSystem.length ? visualSystem.slice(0, 4) : fallback.visualSystem,
-    grounding: grounding.length ? grounding : makeFallbackGrounding(brief),
-    mode: grounding.length ? "foundry" : "demo",
+    grounding: grounding.length ? grounding : fallbackGrounding,
+    mode: fromFoundry ? "foundry" : "demo",
   };
 }
 
@@ -207,6 +220,7 @@ async function fetchFoundryIq(brief: CreativeBrief) {
 
   const response = await fetch(`${endpoint}/query`, {
     method: "POST",
+    signal: AbortSignal.timeout(12000),
     headers: {
       "Content-Type": "application/json",
       ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
@@ -243,7 +257,7 @@ export async function buildCreativeRemix(brief: CreativeBrief): Promise<Creative
   try {
     const foundryPayload = await fetchFoundryIq(trimmedBrief);
     if (foundryPayload) {
-      return extractSummary(foundryPayload, trimmedBrief);
+      return extractSummary(foundryPayload, trimmedBrief, true);
     }
   } catch {
     // Fall back to local synthesis when Foundry IQ is unavailable.

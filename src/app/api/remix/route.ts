@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildCreativeRemix, type CreativeBrief } from "@/lib/creative-remix";
+import { buildCareerQuest, type CareerProfile } from "@/lib/creative-remix";
 
 export const runtime = "nodejs";
 
@@ -14,15 +14,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const brief: CreativeBrief = {
-    prompt: asField(body.prompt),
-    audience: asField(body.audience),
-    format: asField(body.format),
-    mood: asField(body.mood),
-    medium: asField(body.medium),
+  const profile: CareerProfile = {
+    interests: asField(body.interests),
+    skills: asField(body.skills),
+    education: asField(body.education),
+    goals: asField(body.goals),
   };
 
-  const remix = await buildCreativeRemix(brief);
+  const remix = await buildCareerQuest(profile);
 
   return NextResponse.json({ remix });
 }

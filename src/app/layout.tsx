@@ -14,9 +14,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Atlas Remix Studio",
+  title: "AI Career Quest",
   description:
-    "A creative app that turns a short brief into a grounded concept package with Microsoft Foundry IQ support.",
+    "A career exploration app that turns interests, skills, education, and goals into a grounded career quest with Microsoft Foundry IQ support.",
 };
 
 export default function RootLayout({

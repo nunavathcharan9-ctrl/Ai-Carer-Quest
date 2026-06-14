@@ -1,64 +1,59 @@
 "use client";
 
 import { useState } from "react";
-import type { CreativeRemix } from "@/lib/creative-remix";
+import type { CareerQuest } from "@/lib/creative-remix";
 
-type BriefState = {
-  prompt: string;
-  audience: string;
-  format: string;
-  mood: string;
-  medium: string;
+type ProfileState = {
+  interests: string;
+  skills: string;
+  education: string;
+  goals: string;
 };
 
 const starterPrompts = [
   {
-    label: "Storyverse",
-    brief: {
-      prompt: "A bedtime story generator that makes every tale feel like a small legend.",
-      audience: "families",
-      format: "interactive story",
-      mood: "warm and cinematic",
-      medium: "storybook illustration",
+    label: "Design to Product",
+    profile: {
+      interests: "UI design, creativity, and user psychology",
+      skills: "Figma, visual design, and basic prototyping",
+      education: "Bachelors in Computer Science",
+      goals: "Transition into Product Designer role in 6 months",
     },
   },
   {
-    label: "Design Pulse",
-    brief: {
-      prompt: "A design assistant that turns a business idea into a mood board and launch identity.",
-      audience: "startup founders",
-      format: "design kit",
-      mood: "bold and premium",
-      medium: "editorial poster art",
+    label: "Support to AI Ops",
+    profile: {
+      interests: "automation, operations, and AI tooling",
+      skills: "customer support, SQL basics, troubleshooting",
+      education: "Engineering diploma",
+      goals: "Move into AI operations specialist track",
     },
   },
   {
-    label: "Puzzle Engine",
-    brief: {
-      prompt: "A puzzle generator that hides clues inside scenes, symbols, and tiny stories.",
-      audience: "players",
-      format: "game loop",
-      mood: "mysterious and playful",
-      medium: "illustrated UI",
+    label: "Writer to Narrative Design",
+    profile: {
+      interests: "games, storytelling, and world building",
+      skills: "creative writing, dialogue scripting",
+      education: "BA in Literature",
+      goals: "Become a game narrative designer",
     },
   },
 ] as const;
 
-const initialBrief: BriefState = {
-  prompt: starterPrompts[0].brief.prompt,
-  audience: starterPrompts[0].brief.audience,
-  format: starterPrompts[0].brief.format,
-  mood: starterPrompts[0].brief.mood,
-  medium: starterPrompts[0].brief.medium,
+const initialProfile: ProfileState = {
+  interests: starterPrompts[0].profile.interests,
+  skills: starterPrompts[0].profile.skills,
+  education: starterPrompts[0].profile.education,
+  goals: starterPrompts[0].profile.goals,
 };
 
 export function CreativeStudio() {
-  const [brief, setBrief] = useState<BriefState>(initialBrief);
-  const [remix, setRemix] = useState<CreativeRemix | null>(null);
+  const [profile, setProfile] = useState<ProfileState>(initialProfile);
+  const [remix, setRemix] = useState<CareerQuest | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function generateRemix(nextBrief = brief) {
+  async function generateRemix(nextProfile = profile) {
     setIsLoading(true);
     setError(null);
 
@@ -68,11 +63,11 @@ export function CreativeStudio() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(nextBrief),
+        body: JSON.stringify(nextProfile),
       });
 
       const payload = (await response.json().catch(() => null)) as
-        | { remix?: CreativeRemix; error?: string }
+        | { remix?: CareerQuest; error?: string }
         | null;
 
       if (!response.ok) {
@@ -80,7 +75,7 @@ export function CreativeStudio() {
       }
 
       if (!payload?.remix) {
-        throw new Error("The remix engine returned an empty response.");
+        throw new Error("The career quest engine returned an empty response.");
       }
 
       setRemix(payload.remix);
@@ -88,7 +83,7 @@ export function CreativeStudio() {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "The remix engine could not complete the request.",
+          : "The career quest engine could not complete the request.",
       );
     } finally {
       setIsLoading(false);
@@ -108,7 +103,7 @@ export function CreativeStudio() {
             <div className="max-w-3xl space-y-5">
               <div className="flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.35em] text-cyan-200/90">
                 <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1">
-                  Creative Apps
+                  Career Guidance
                 </span>
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
                   Foundry IQ ready
@@ -120,22 +115,22 @@ export function CreativeStudio() {
 
               <div className="space-y-3">
                 <p className="text-sm font-medium uppercase tracking-[0.3em] text-amber-200/80">
-                  Atlas Remix Studio
+                  AI Career Quest
                 </p>
                 <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-7xl">
-                  Turn one creative brief into a grounded, presentation-ready concept.
+                  Turn your profile into a guided career roadmap.
                 </h1>
                 <p className="max-w-3xl text-base leading-7 text-slate-300 sm:text-lg">
-                  This starter kit transforms a short idea into a mood board, a logline,
-                  a visual language, and a cited grounding layer. If Foundry IQ is
-                  configured, the remix uses enterprise knowledge. Otherwise it falls
-                  back to a polished local synthesis so the app still runs today.
+                  AI Career Quest helps learners and professionals discover role matches,
+                  close skill gaps, and build step-by-step growth plans. If Foundry IQ is
+                  configured, guidance is grounded with enterprise context. Otherwise it
+                  falls back to polished local synthesis so the app still runs today.
                 </p>
               </div>
             </div>
 
             <div className="grid w-full max-w-sm gap-3 sm:grid-cols-3 xl:grid-cols-1">
-              <StatCard label="Output lanes" value="Story, design, game" />
+              <StatCard label="Output lanes" value="Matches, roadmap, simulator" />
               <StatCard label="IQ layer" value="Foundry IQ + fallback" />
               <StatCard label="Time to demo" value="Today" />
             </div>
@@ -147,10 +142,10 @@ export function CreativeStudio() {
             <div className="mb-6 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">
-                  Creative input
+                  Career input
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">
-                  Start with a prompt, then steer the tone.
+                  Share interests, skills, education, and goals.
                 </h2>
               </div>
               <button
@@ -159,7 +154,7 @@ export function CreativeStudio() {
                 disabled={isLoading}
                 className="rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isLoading ? "Generating..." : "Remix now"}
+                {isLoading ? "Generating..." : "Quest now"}
               </button>
             </div>
 
@@ -169,8 +164,8 @@ export function CreativeStudio() {
                   key={preset.label}
                   type="button"
                   onClick={() => {
-                    setBrief({ ...preset.brief });
-                    void generateRemix({ ...preset.brief });
+                    setProfile({ ...preset.profile });
+                    void generateRemix({ ...preset.profile });
                   }}
                   className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-cyan-300/30 hover:bg-cyan-300/10"
                 >
@@ -181,38 +176,34 @@ export function CreativeStudio() {
 
             <div className="space-y-4">
               <Field
-                label="Prompt"
-                value={brief.prompt}
-                onChange={(value) => setBrief((current) => ({ ...current, prompt: value }))}
+                label="Interests"
+                value={profile.interests}
+                onChange={(value) => setProfile((current) => ({ ...current, interests: value }))}
                 rows={5}
                 textarea
-                placeholder="Describe the creative app, character, or experience you want to build."
+                placeholder="What topics or industries excite you?"
               />
 
               <div className="grid gap-4 md:grid-cols-2">
                 <Field
-                  label="Audience"
-                  value={brief.audience}
-                  onChange={(value) => setBrief((current) => ({ ...current, audience: value }))}
-                  placeholder="Who is it for?"
+                  label="Skills"
+                  value={profile.skills}
+                  onChange={(value) => setProfile((current) => ({ ...current, skills: value }))}
+                  placeholder="Current strengths and tools"
                 />
                 <Field
-                  label="Format"
-                  value={brief.format}
-                  onChange={(value) => setBrief((current) => ({ ...current, format: value }))}
-                  placeholder="Story, game, design kit..."
+                  label="Education"
+                  value={profile.education}
+                  onChange={(value) => setProfile((current) => ({ ...current, education: value }))}
+                  placeholder="Degree, certification, or background"
                 />
                 <Field
-                  label="Mood"
-                  value={brief.mood}
-                  onChange={(value) => setBrief((current) => ({ ...current, mood: value }))}
-                  placeholder="Playful, cinematic, surreal..."
-                />
-                <Field
-                  label="Medium"
-                  value={brief.medium}
-                  onChange={(value) => setBrief((current) => ({ ...current, medium: value }))}
-                  placeholder="Poster art, motion UI, comic..."
+                  label="Goals"
+                  value={profile.goals}
+                  onChange={(value) => setProfile((current) => ({ ...current, goals: value }))}
+                  placeholder="Target role and timeline"
+                  textarea
+                  rows={3}
                 />
               </div>
 
@@ -222,7 +213,7 @@ export function CreativeStudio() {
                 disabled={isLoading}
                 className="w-full rounded-[1.25rem] bg-white px-5 py-4 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isLoading ? "Building the concept..." : "Generate a grounded remix"}
+                {isLoading ? "Building your quest..." : "Generate Career Quest"}
               </button>
 
               {error ? (
@@ -238,7 +229,7 @@ export function CreativeStudio() {
                 <p className="mt-2 text-sm leading-6 text-slate-300">
                   Add your Foundry IQ connection details in environment variables to use
                   live grounding. Without that config, the app keeps working with local
-                  synthesis, so the demo is still shippable today.
+                  synthesis, so your career demo is still shippable today.
                 </p>
               </div>
             </div>
@@ -248,10 +239,10 @@ export function CreativeStudio() {
             <div className="mb-6 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">
-                  Remix output
+                  Career output
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">
-                  The concept board, ready to pitch.
+                  Your quest board, ready to act on.
                 </h2>
               </div>
               <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.25em] text-slate-300">
@@ -263,7 +254,7 @@ export function CreativeStudio() {
               <div className="space-y-5">
                 <article className="rounded-[1.75rem] border border-cyan-300/15 bg-slate-950/30 p-6">
                   <p className="text-xs uppercase tracking-[0.35em] text-cyan-200/70">
-                    Title
+                    Career roadmap
                   </p>
                   <h3 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
                     {remix.title}
@@ -277,23 +268,45 @@ export function CreativeStudio() {
                 </article>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Card title="Hero moments" tone="cyan">
-                    {remix.heroMoments.map((moment) => (
-                      <li key={moment}>{moment}</li>
+                  <Card title="Career matches" tone="cyan">
+                    {remix.careerMatches.map((match) => (
+                      <li key={match}>{match}</li>
                     ))}
                   </Card>
-                  <Card title="Visual system" tone="amber">
-                    {remix.visualSystem.map((item) => (
-                      <li key={item}>{item}</li>
+                  <Card title="Career milestones" tone="amber">
+                    {remix.careerMilestones.map((moment) => (
+                      <li key={moment}>{moment}</li>
                     ))}
                   </Card>
                 </div>
 
                 <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                   <p className="text-xs uppercase tracking-[0.35em] text-slate-300/80">
-                    Opening line
+                    Quest-based learning path
                   </p>
-                  <p className="mt-3 text-lg leading-8 text-white">{remix.openingLine}</p>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-200">
+                    {remix.learningPath.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+
+                <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-300/80">
+                    Skill-gap analysis
+                  </p>
+                  <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-200">
+                    {remix.skillGapAnalysis.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+
+                <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-300/80">
+                    Career simulator
+                  </p>
+                  <p className="mt-3 text-lg leading-8 text-white">{remix.careerSimulator}</p>
                 </article>
 
                 <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
@@ -405,11 +418,11 @@ function EmptyState({ isLoading }: { isLoading: boolean }) {
           Ready when you are
         </p>
         <h3 className="text-3xl font-semibold text-white">
-          {isLoading ? "The remix engine is working." : "Your first concept board will appear here."}
+          {isLoading ? "The quest engine is working." : "Your first career quest board will appear here."}
         </h3>
         <p className="text-sm leading-6 text-slate-300">
-          Submit the brief on the left to generate a story-ready package with grounding,
-          visual language, and a stronger pitch angle.
+          Submit your profile on the left to generate career matches, milestones,
+          a learning path, and a grounded roadmap.
         </p>
       </div>
     </div>

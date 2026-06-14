@@ -4,7 +4,7 @@ Use this as your final pre-submit verification list.
 
 ## Core Requirements
 
-- [x] Creative application implemented (Atlas Remix Studio)
+- [x] Creative application implemented (AI Career Quest)
 - [x] GitHub Copilot usage described
 - [x] Microsoft IQ integration path implemented (Foundry IQ adapter)
 - [x] Fallback behavior defined when IQ service is unavailable
@@ -42,4 +42,4 @@ Use this as your final pre-submit verification list.
 - [x] README up to date with architecture + run steps
 - [ ] Demo script rehearsed (3-5 minutes)
 - [x] Screenshots prepared for submission
-- [ ] Final commit message documents readiness
+- [x] Final commit message documents readiness

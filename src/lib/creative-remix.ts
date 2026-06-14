@@ -1,9 +1,8 @@
-export type CreativeBrief = {
-  prompt: string;
-  audience: string;
-  format: string;
-  mood: string;
-  medium: string;
+export type CareerProfile = {
+  interests: string;
+  skills: string;
+  education: string;
+  goals: string;
 };
 
 export type InsightSource = {
@@ -12,87 +11,105 @@ export type InsightSource = {
   citation: string;
 };
 
-export type CreativeRemix = {
+export type CareerQuest = {
   title: string;
   logline: string;
   tagline: string;
   openingLine: string;
-  heroMoments: string[];
-  visualSystem: string[];
+  careerMatches: string[];
+  careerMilestones: string[];
+  learningPath: string[];
+  skillGapAnalysis: string[];
+  careerSimulator: string;
+  careerRoadmap: string;
   grounding: InsightSource[];
   mode: "foundry" | "demo";
 };
 
-function makeFoundryGroundingFallback(brief: CreativeBrief): InsightSource[] {
+function makeFoundryGroundingFallback(profile: CareerProfile): InsightSource[] {
   return [
     {
       title: "Foundry IQ session",
-      summary: `Grounded response generated for ${brief.audience} in ${brief.format} format with a ${brief.mood} tone.`,
+      summary: `Grounded career guidance generated for ${profile.goals} using skills from ${profile.skills}.`,
       citation: "Foundry IQ",
     },
   ];
 }
 
-const DEFAULT_PROMPT = "A creative app for brainstorming a new experience.";
+const DEFAULT_INTERESTS = "technology, design, and problem-solving";
 
 function sentenceCase(text: string) {
   const trimmed = text.trim();
   return trimmed.length ? trimmed[0].toUpperCase() + trimmed.slice(1) : trimmed;
 }
 
-function deriveTitle(prompt: string, format: string) {
-  const fragment = prompt
+function deriveTitle(interests: string, goals: string) {
+  const fragment = goals
     .split(/[,.;:!?]/)[0]
     .split(/\s+/)
     .slice(0, 4)
     .join(" ");
 
-  return `${sentenceCase(fragment || DEFAULT_PROMPT)} ${format ? `for ${format}` : ""}`
+  return `${sentenceCase(fragment || "Career Quest")} ${interests ? `for ${interests}` : ""}`
     .replace(/\s+/g, " ")
     .trim();
 }
 
-function makeFallbackGrounding(brief: CreativeBrief): InsightSource[] {
+function makeFallbackGrounding(profile: CareerProfile): InsightSource[] {
   return [
     {
-      title: "Brief DNA",
-      summary: `Your prompt centers on ${brief.prompt || DEFAULT_PROMPT.toLowerCase()}. The remix keeps that core idea intact while changing the medium.`,
+      title: "Interest Map",
+      summary: `Your profile centers on ${profile.interests || DEFAULT_INTERESTS}. The quest aligns career choices to those themes.`,
       citation: "Local synthesis",
     },
     {
-      title: "Audience Lens",
-      summary: `This version is tuned for ${brief.audience || "a general creative audience"} so the output feels immediately usable.`,
+      title: "Skills Lens",
+      summary: `Current strengths (${profile.skills || "foundational communication and digital skills"}) are used as your launch pad roles.`,
       citation: "Local synthesis",
     },
     {
-      title: "Tone Compass",
-      summary: `The ${brief.mood || "playful"} mood is translated into pacing, color, and language choices.`,
+      title: "Goal Alignment",
+      summary: `Your goal (${profile.goals || "career growth"}) is translated into milestones and a practical roadmap.`,
       citation: "Local synthesis",
     },
   ];
 }
 
-export function buildFallbackRemix(brief: CreativeBrief): CreativeRemix {
-  const title = deriveTitle(brief.prompt, brief.format);
+export function buildFallbackCareerQuest(profile: CareerProfile): CareerQuest {
+  const title = deriveTitle(profile.interests, profile.goals);
 
   return {
     title,
-    logline: `A ${brief.mood || "playful"} ${brief.format || "experience"} shaped for ${brief.audience || "creative users"} and grounded in ${brief.medium || "a flexible visual medium"}.`,
-    tagline: "Turn a brief into a living concept board.",
+    logline: `A guided career quest for ${profile.goals || "growth-minded learners"}, grounded in ${profile.interests || DEFAULT_INTERESTS}.`,
+    tagline: "Turn your profile into a concrete career roadmap.",
     openingLine:
-      "You do not need a blank page anymore; you need the right constraints and one vivid starting image.",
-    heroMoments: [
-      "A prompt-to-concept engine that expands one idea into a memorable package.",
-      "A grounding panel that keeps the output anchored to cited or synthesized context.",
-      "A remix stage that translates strategy into mood, scene, and structure.",
+      "You do not need to guess your future role; you need a clear path, milestones, and the right skill upgrades.",
+    careerMatches: [
+      "Product Designer",
+      "UX Research Analyst",
+      "AI Solutions Specialist",
     ],
-    visualSystem: [
-      `Primary medium: ${brief.medium || "mixed media"}`,
-      `Mood language: ${brief.mood || "luminous"}`,
-      `Audience focus: ${brief.audience || "general creative"}`,
-      `Format target: ${brief.format || "interactive concept"}`,
+    careerMilestones: [
+      "Month 1: Build a portfolio project aligned with your strongest skill.",
+      "Month 2: Complete one role-specific certification or course.",
+      "Month 3: Run 3 mock interviews and apply to 10 targeted roles.",
     ],
-    grounding: makeFallbackGrounding(brief),
+    learningPath: [
+      "Week 1-2: Foundation refresh from your current education level.",
+      "Week 3-6: Applied projects to strengthen practical role skills.",
+      "Week 7-10: Interview prep, case practice, and networking sprints.",
+      "Week 11-12: Job applications and portfolio polish.",
+    ],
+    skillGapAnalysis: [
+      "Strength: Existing domain familiarity from your current skills.",
+      "Gap: Advanced problem framing and role-specific tooling depth.",
+      "Action: Add weekly project reps and measurable portfolio outcomes.",
+    ],
+    careerSimulator:
+      "If you follow this plan for 90 days, you can transition from exploration to interview-ready candidate status with a focused portfolio.",
+    careerRoadmap:
+      "Phase 1 Discover -> Phase 2 Build -> Phase 3 Validate -> Phase 4 Apply",
+    grounding: makeFallbackGrounding(profile),
     mode: "demo",
   };
 }
@@ -156,13 +173,13 @@ function extractSources(payload: unknown): InsightSource[] {
   return [];
 }
 
-function extractSummary(payload: unknown, brief: CreativeBrief, fromFoundry = false): CreativeRemix {
+function extractSummary(payload: unknown, profile: CareerProfile, fromFoundry = false): CareerQuest {
   if (!payload || typeof payload !== "object") {
-    return buildFallbackRemix(brief);
+    return buildFallbackCareerQuest(profile);
   }
 
   const record = payload as Record<string, unknown>;
-  const fallback = buildFallbackRemix(brief);
+  const fallback = buildFallbackCareerQuest(profile);
   const title =
     typeof record.title === "string"
       ? record.title
@@ -178,7 +195,7 @@ function extractSummary(payload: unknown, brief: CreativeBrief, fromFoundry = fa
   const tagline =
     typeof record.tagline === "string"
       ? record.tagline
-      : "Grounded ideas, remixed with style.";
+      : "Career guidance, grounded with context.";
   const openingLine =
     typeof record.openingLine === "string"
       ? record.openingLine
@@ -186,30 +203,63 @@ function extractSummary(payload: unknown, brief: CreativeBrief, fromFoundry = fa
         ? record.opening
         : fallback.openingLine;
 
-  const heroMoments = Array.isArray(record.heroMoments)
-    ? record.heroMoments.filter((value): value is string => typeof value === "string")
-    : fallback.heroMoments;
-  const visualSystem = Array.isArray(record.visualSystem)
-    ? record.visualSystem.filter((value): value is string => typeof value === "string")
-    : fallback.visualSystem;
+  const careerMatches = Array.isArray(record.careerMatches)
+    ? record.careerMatches.filter((value): value is string => typeof value === "string")
+    : Array.isArray(record.matches)
+      ? record.matches.filter((value): value is string => typeof value === "string")
+      : fallback.careerMatches;
+  const careerMilestones = Array.isArray(record.careerMilestones)
+    ? record.careerMilestones.filter((value): value is string => typeof value === "string")
+    : Array.isArray(record.heroMoments)
+      ? record.heroMoments.filter((value): value is string => typeof value === "string")
+      : fallback.careerMilestones;
+  const learningPath = Array.isArray(record.learningPath)
+    ? record.learningPath.filter((value): value is string => typeof value === "string")
+    : Array.isArray(record.visualSystem)
+      ? record.visualSystem.filter((value): value is string => typeof value === "string")
+      : fallback.learningPath;
+  const skillGapAnalysis = Array.isArray(record.skillGapAnalysis)
+    ? record.skillGapAnalysis.filter((value): value is string => typeof value === "string")
+    : Array.isArray(record.skillGaps)
+      ? record.skillGaps.filter((value): value is string => typeof value === "string")
+      : fallback.skillGapAnalysis;
+
+  const careerSimulator =
+    typeof record.careerSimulator === "string"
+      ? record.careerSimulator
+      : fallback.careerSimulator;
+
+  const careerRoadmap =
+    typeof record.careerRoadmap === "string"
+      ? record.careerRoadmap
+      : fallback.careerRoadmap;
+
   const grounding = extractSources(payload);
   const fallbackGrounding = fromFoundry
-    ? makeFoundryGroundingFallback(brief)
-    : makeFallbackGrounding(brief);
+    ? makeFoundryGroundingFallback(profile)
+    : makeFallbackGrounding(profile);
 
   return {
     title,
     logline,
     tagline,
     openingLine,
-    heroMoments: heroMoments.length ? heroMoments.slice(0, 3) : fallback.heroMoments,
-    visualSystem: visualSystem.length ? visualSystem.slice(0, 4) : fallback.visualSystem,
+    careerMatches: careerMatches.length ? careerMatches.slice(0, 4) : fallback.careerMatches,
+    careerMilestones: careerMilestones.length
+      ? careerMilestones.slice(0, 4)
+      : fallback.careerMilestones,
+    learningPath: learningPath.length ? learningPath.slice(0, 4) : fallback.learningPath,
+    skillGapAnalysis: skillGapAnalysis.length
+      ? skillGapAnalysis.slice(0, 4)
+      : fallback.skillGapAnalysis,
+    careerSimulator,
+    careerRoadmap,
     grounding: grounding.length ? grounding : fallbackGrounding,
     mode: fromFoundry ? "foundry" : "demo",
   };
 }
 
-async function fetchFoundryIq(brief: CreativeBrief) {
+async function fetchFoundryIq(profile: CareerProfile) {
   const endpoint = process.env.FOUNDRY_IQ_ENDPOINT?.replace(/\/$/, "");
   const apiKey = process.env.FOUNDRY_IQ_API_KEY;
   const workspace = process.env.FOUNDRY_IQ_WORKSPACE;
@@ -227,12 +277,12 @@ async function fetchFoundryIq(brief: CreativeBrief) {
       ...(workspace ? { "x-foundry-workspace": workspace } : {}),
     },
     body: JSON.stringify({
-      query: brief.prompt,
+      query: `Generate a career quest with matches, milestones, learning path, skill-gap analysis, simulator, and roadmap. Interests: ${profile.interests}. Skills: ${profile.skills}. Education: ${profile.education}. Goals: ${profile.goals}.`,
       context: {
-        audience: brief.audience,
-        format: brief.format,
-        mood: brief.mood,
-        medium: brief.medium,
+        interests: profile.interests,
+        skills: profile.skills,
+        education: profile.education,
+        goals: profile.goals,
       },
       topK: 3,
     }),
@@ -245,23 +295,22 @@ async function fetchFoundryIq(brief: CreativeBrief) {
   return response.json();
 }
 
-export async function buildCreativeRemix(brief: CreativeBrief): Promise<CreativeRemix> {
-  const trimmedBrief: CreativeBrief = {
-    prompt: brief.prompt.trim() || DEFAULT_PROMPT,
-    audience: brief.audience.trim() || "creative explorers",
-    format: brief.format.trim() || "concept deck",
-    mood: brief.mood.trim() || "luminous",
-    medium: brief.medium.trim() || "editorial mixed media",
+export async function buildCareerQuest(profile: CareerProfile): Promise<CareerQuest> {
+  const trimmedProfile: CareerProfile = {
+    interests: profile.interests.trim() || DEFAULT_INTERESTS,
+    skills: profile.skills.trim() || "communication, collaboration, and digital tools",
+    education: profile.education.trim() || "undergraduate level",
+    goals: profile.goals.trim() || "transition into a growth career role",
   };
 
   try {
-    const foundryPayload = await fetchFoundryIq(trimmedBrief);
+    const foundryPayload = await fetchFoundryIq(trimmedProfile);
     if (foundryPayload) {
-      return extractSummary(foundryPayload, trimmedBrief, true);
+      return extractSummary(foundryPayload, trimmedProfile, true);
     }
   } catch {
     // Fall back to local synthesis when Foundry IQ is unavailable.
   }
 
-  return buildFallbackRemix(trimmedBrief);
+  return buildFallbackCareerQuest(trimmedProfile);
 }
